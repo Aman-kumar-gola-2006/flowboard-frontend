@@ -1,0 +1,68 @@
+/* Drag Preview - Card being dragged */
+.cdk-drag-preview {
+  @apply bg-white rounded-lg shadow-2xl border-2 border-indigo-400 p-3 opacity-95;
+  transform: rotate(3deg) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.cdk-drag-preview .text-sm {
+  @apply text-gray-800;
+}
+
+/* Placeholder - Empty space where card was */
+.cdk-drag-placeholder {
+  @apply bg-gray-200 rounded-lg opacity-50;
+  height: 120px; /* Approximate card height */
+}
+
+/* Drop list - highlight when dragging over */
+.cdk-drop-list.cdk-drag-over {
+  @apply bg-indigo-50 rounded-lg;
+}
+
+/* Drop list - when any item is being dragged from this list */
+.cdk-drop-list.cdk-drop-list-dragging {
+  background-color: rgba(99, 102, 241, 0.03);
+}
+
+/* Animation during drag */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Cards container with smooth transitions */
+.cdk-drop-list .cdk-drag {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.cdk-drop-list .cdk-drag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* When a card is being dragged, show placeholder and fade other cards */
+.cdk-drop-list.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-preview) {
+  opacity: 0.3;
+  transform: scale(0.95);
+}
+
+/* Minimum height for drop list to accept drops */
+.cdk-drop-list {
+  min-height: 100px;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

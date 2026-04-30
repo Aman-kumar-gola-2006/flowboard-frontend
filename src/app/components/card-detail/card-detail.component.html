@@ -1,0 +1,401 @@
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" (click)="closeModal()">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="flex items-start justify-between p-5 border-b border-gray-200">
+      <div class="flex-1">
+        <!-- Title -->
+        <div *ngIf="!isEditingTitle" class="flex items-center gap-2">
+          <h2 class="text-xl font-bold text-gray-800">{{ card.title }}</h2>
+          <button (click)="startEditTitle()" class="p-1 text-gray-400 hover:text-indigo-600 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+          </button>
+        </div>
+        <div *ngIf="isEditingTitle">
+          <input
+            type="text"
+            [(ngModel)]="editedTitle"
+            class="w-full text-xl font-bold p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+            (keydown.enter)="saveTitle()"
+            (keydown.escape)="cancelEditTitle()"
+            autofocus
+          />
+          <div class="flex gap-2 mt-2">
+            <button (click)="saveTitle()" class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">Save</button>
+            <button (click)="cancelEditTitle()" class="px-3 py-1.5 text-gray-600 text-sm rounded-lg hover:bg-gray-100">Cancel</button>
+          </div>
+        </div>
+        
+        <!-- Meta -->
+        <p class="text-sm text-gray-500 mt-1">
+          in list <span class="font-medium">{{ card.status }}</span>
+        </p>
+      </div>
+      <button (click)="closeModal()" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      
+      <!-- Labels Section -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Labels</span>
+        </div>
+        
+        <!-- Current Labels on Card -->
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span *ngFor="let label of card.labels" 
+                [style.background]="label.color" 
+                [style.color]="getTextColor(label.color)"
+                class="px-3 py-1.5 text-sm rounded-full shadow-sm flex items-center gap-2 transition-all">
+            {{ label.name }}
+            <button (click)="removeLabel(label)" class="text-white/70 hover:text-white ml-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </span>
+        </div>
+
+        <!-- Add Label Dropdown -->
+        <div class="relative">
+          <button (click)="showLabelDropdown = !showLabelDropdown" 
+                  class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Label
+          </button>
+          
+          <div *ngIf="showLabelDropdown" 
+               class="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20 overflow-hidden">
+            <!-- Create New Label -->
+            <div class="px-3 pb-2 border-b mb-1">
+              <input [(ngModel)]="newLabelName" placeholder="Create new label..." 
+                     class="w-full p-2 text-sm border border-gray-200 rounded-lg mb-1 focus:outline-none focus:border-indigo-500"
+                     (keydown.enter)="createAndAddLabel()" />
+              <div class="flex gap-2">
+                <input type="color" [(ngModel)]="newLabelColor" class="w-8 h-8 cursor-pointer rounded border-0 bg-transparent" />
+                <button (click)="createAndAddLabel()" 
+                        class="flex-1 bg-indigo-600 text-white text-xs font-bold rounded-lg py-1 hover:bg-indigo-700 transition">
+                  Create
+                </button>
+              </div>
+            </div>
+            
+            <!-- Existing Labels -->
+            <div class="max-h-48 overflow-y-auto">
+              <div *ngFor="let label of boardLabels" 
+                   (click)="toggleLabel(label)"
+                   class="px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between group">
+                <div class="flex items-center gap-3">
+                  <span [style.background]="label.color" class="w-4 h-4 rounded-full flex-shrink-0 shadow-sm border border-black/5"></span>
+                  <span class="text-sm text-gray-700 group-hover:text-indigo-600 transition-colors">{{ label.name }}</span>
+                </div>
+                <svg *ngIf="hasLabel(label)" class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </div>
+            
+            <div *ngIf="boardLabels.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+              No labels yet. Create one above!
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Description -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Description</span>
+        </div>
+        
+        <div *ngIf="!isEditingDescription">
+          <p *ngIf="card.description" class="text-gray-700 whitespace-pre-wrap">{{ card.description }}</p>
+          <button *ngIf="!card.description" (click)="startEditDescription()" class="w-full p-3 bg-gray-50 text-gray-500 text-sm rounded-lg hover:bg-gray-100 text-left">
+            Add a more detailed description...
+          </button>
+          <button *ngIf="card.description" (click)="startEditDescription()" class="mt-2 text-sm text-indigo-600 hover:text-indigo-800">Edit</button>
+        </div>
+        
+        <div *ngIf="isEditingDescription">
+          <textarea
+            [(ngModel)]="editedDescription"
+            rows="4"
+            class="w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:border-indigo-500"
+            placeholder="Add a more detailed description..."
+          ></textarea>
+          <div class="flex gap-2 mt-2">
+            <button (click)="saveDescription()" class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">Save</button>
+            <button (click)="cancelEditDescription()" class="px-3 py-1.5 text-gray-600 text-sm rounded-lg hover:bg-gray-100">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklist Section -->
+      <div class="border-t pt-4 mt-4">
+          <div class="flex items-center gap-2 mb-3">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              <span class="text-sm font-medium text-gray-700">Checklist</span>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div *ngIf="checklistItems.length > 0" class="mb-3">
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+                  <span>{{ getChecklistProgress() }}% complete</span>
+              </div>
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                  <div [style.width]="getChecklistProgress() + '%'" class="h-2 bg-green-500 rounded-full transition-all"></div>
+              </div>
+          </div>
+          
+          <!-- Items -->
+          <div class="space-y-2 mb-3">
+              <div *ngFor="let item of checklistItems" class="flex items-center gap-2 group">
+                  <input 
+                      type="checkbox" 
+                      [checked]="item.isCompleted" 
+                      (change)="toggleChecklistItem(item)"
+                      class="w-4 h-4 text-green-600 rounded cursor-pointer"
+                  />
+                  <span [class.line-through]="item.isCompleted" [class.text-gray-400]="item.isCompleted" class="text-sm flex-1">{{ item.text }}</span>
+                  <button (click)="deleteChecklistItem(item.id)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                  </button>
+              </div>
+          </div>
+          
+          <!-- Add Item -->
+          <div class="flex gap-2">
+              <input [(ngModel)]="newChecklistItem" placeholder="Add an item..." (keydown.enter)="addChecklistItem()"
+                  class="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500" />
+              <button (click)="addChecklistItem()" class="px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">Add</button>
+      </div>
+
+      <!-- Attachments Section -->
+      <div class="border-t pt-4 mt-4">
+          <div class="flex items-center gap-2 mb-3">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+              </svg>
+              <span class="text-sm font-medium text-gray-700">Attachments</span>
+          </div>
+          
+          <!-- File List -->
+          <div class="space-y-2 mb-3">
+              <div *ngFor="let attachment of attachments" class="flex items-center justify-between bg-gray-50 rounded-lg p-3 group">
+                  <div class="flex items-center gap-3">
+                      <span class="text-lg">{{ getFileIcon(attachment.fileType) }}</span>
+                      <div>
+                          <a [href]="attachment.fileUrl" target="_blank" class="text-sm font-medium text-indigo-600 hover:underline">{{ attachment.fileName }}</a>
+                          <p class="text-xs text-gray-400">{{ formatFileSize(attachment.fileSize) }}</p>
+                      </div>
+                  </div>
+                  <button (click)="deleteAttachment(attachment.id)" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                  </button>
+              </div>
+          </div>
+          
+          <!-- Upload Button -->
+          <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer text-sm text-gray-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Attach File
+              <input type="file" (change)="onFileSelected($event)" class="hidden" />
+          </label>
+      </div>
+      
+      <!-- Meta Info Grid -->
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Assignee -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Assignee</label>
+          <div class="relative">
+            <button (click)="showAssigneeDropdown = !showAssigneeDropdown" class="w-full p-2 bg-gray-50 rounded-lg text-sm text-left hover:bg-gray-100 transition flex items-center gap-2">
+              <span *ngIf="card.assigneeId" class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-xs font-medium">
+                {{ card.assigneeName?.charAt(0) || '?' }}
+              </span>
+              <span>{{ card.assigneeName || 'Unassigned' }}</span>
+            </button>
+            <div *ngIf="showAssigneeDropdown" class="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+              <div (click)="unassign()" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-500">Unassigned</div>
+              <div *ngFor="let member of boardMembers" (click)="assignTo(member)" class="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2">
+                <span class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-xs font-medium">
+                  {{ member.userName?.charAt(0) || '?' }}
+                </span>
+                <span class="text-sm">{{ member.userName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Due Date -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Due Date</label>
+          <div class="relative">
+            <button (click)="showDatePicker = !showDatePicker" class="w-full p-2 bg-gray-50 rounded-lg text-sm text-left hover:bg-gray-100 transition">
+              {{ card.dueDate ? (card.dueDate | date:'mediumDate') : 'Not set' }}
+            </button>
+            <div *ngIf="showDatePicker" class="absolute top-full left-0 mt-1 p-3 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+              <input type="date" [(ngModel)]="selectedDate" class="p-2 border border-gray-300 rounded-lg text-sm" />
+              <div class="flex gap-2 mt-2">
+                <button (click)="saveDueDate()" class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg">Save</button>
+                <button (click)="removeDueDate()" class="px-3 py-1.5 text-red-600 text-sm rounded-lg hover:bg-red-50">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Priority -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Priority</label>
+          <select [(ngModel)]="selectedPriority" (change)="updatePriority()" 
+            class="w-full p-2 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-indigo-500">
+            <option value="LOW">🟢 Low</option>
+            <option value="MEDIUM">🟡 Medium</option>
+            <option value="HIGH">🟠 High</option>
+            <option value="CRITICAL">🔴 Critical</option>
+          </select>
+        </div>
+        
+        <!-- Status -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+          <select [(ngModel)]="selectedStatus" (change)="updateStatus()"
+            class="w-full p-2 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-indigo-500">
+            <option value="TO_DO">📋 To Do</option>
+            <option value="IN_PROGRESS">🔄 In Progress</option>
+            <option value="IN_REVIEW">👀 In Review</option>
+            <option value="DONE">✅ Done</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Comments Section -->
+      <div class="border-t pt-4 mt-4">
+          <div class="flex items-center gap-2 mb-3">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              <span class="text-sm font-medium text-gray-700">Comments</span>
+              <span class="text-xs text-gray-400">({{ comments.length }})</span>
+          </div>
+      
+          <!-- Add Comment -->
+          <div class="flex gap-3 mb-4">
+              <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-sm font-medium flex-shrink-0">
+                  {{ getInitials(currentUserId.toString()) }}
+              </div>
+              <div class="flex-1">
+                  <textarea
+                      [(ngModel)]="newComment"
+                      rows="2"
+                      placeholder="Write a comment..."
+                      class="w-full p-3 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:border-indigo-500"
+                      (keydown.enter)="$event.preventDefault(); addComment()"
+                  ></textarea>
+                  <button type="button" [disabled]="isPostingComment || !newComment.trim()" (click)="addComment()" class="mt-2 px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                      {{ isPostingComment ? 'Posting...' : 'Comment' }}
+                  </button>
+              </div>
+          </div>
+      
+          <!-- Comments List -->
+          <div class="space-y-4 max-h-80 overflow-y-auto">
+              <div *ngFor="let comment of comments" class="group">
+                  <div class="flex gap-3">
+                      <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-medium flex-shrink-0">
+                          {{ comment.authorName.charAt(0) || 'U' }}
+                      </div>
+                      <div class="flex-1">
+                          <div class="bg-gray-50 rounded-xl p-3">
+                              <div class="flex items-center justify-between mb-1">
+                                  <span class="text-sm font-medium text-gray-800">{{ comment.authorName || 'User ' + comment.authorId }}</span>
+                                  <span class="text-xs text-gray-400">{{ getTimeAgo(comment.createdAt) }}</span>
+                              </div>
+                              <p class="text-sm text-gray-700">{{ comment.content }}</p>
+                          </div>
+                          <button *ngIf="comment.authorId === currentUserId" (click)="deleteComment(comment)" 
+                                  class="text-xs text-gray-400 hover:text-red-500 mt-1 opacity-0 group-hover:opacity-100 transition">
+                              Delete
+                          </button>
+                      </div>
+                  </div>
+              </div>
+              
+              <div *ngIf="comments.length === 0" class="text-center py-4 text-gray-400 text-sm">
+                  No comments yet. Be the first!
+              </div>
+          </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="border-t pt-4 mt-4">
+          <div class="flex items-center gap-2 mb-3">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="text-sm font-medium text-gray-700">Activity</span>
+          </div>
+          
+          <div class="space-y-3 max-h-60 overflow-y-auto">
+              <div *ngFor="let activity of activities" class="flex gap-3 text-sm">
+                  <div class="w-2 h-2 mt-1.5 rounded-full bg-indigo-400 flex-shrink-0"></div>
+                  <div>
+                      <p class="text-gray-800">
+                          <span class="font-medium">{{ activity.actorName }}</span>
+                          {{ activity.details }}
+                      </p>
+                      <p class="text-xs text-gray-400">{{ getTimeAgo(activity.createdAt) }}</p>
+                  </div>
+              </div>
+              <div *ngIf="activities.length === 0" class="text-gray-500 text-sm">No activity yet</div>
+          </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="p-5 border-t border-gray-200 flex justify-between">
+      <button (click)="confirmDelete()" class="px-4 py-2 text-red-600 text-sm rounded-lg hover:bg-red-50 transition">
+        Delete Card
+      </button>
+      <button (click)="closeModal()" class="px-4 py-2 text-gray-600 text-sm rounded-lg hover:bg-gray-100 transition">
+        Close
+      </button>
+    </div>
+    
+    <!-- Delete Confirmation -->
+    <div *ngIf="showDeleteConfirm" class="absolute inset-0 bg-black/30 flex items-center justify-center rounded-2xl">
+      <div class="bg-white rounded-xl p-6 shadow-xl max-w-sm">
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Card?</h3>
+        <p class="text-gray-600 text-sm mb-4">This action cannot be undone.</p>
+        <div class="flex gap-3">
+          <button (click)="deleteCard()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
+          <button (click)="cancelDelete()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

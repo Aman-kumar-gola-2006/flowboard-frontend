@@ -1,0 +1,169 @@
+<div class="min-h-screen bg-gray-50">
+  <app-navbar></app-navbar>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-4">
+        <button (click)="goBack()" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">{{ workspace?.name }} Analytics</h1>
+          <p class="text-gray-500">Overview of your workspace performance and activity</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full">PRO FEATURE</span>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+      <p class="text-gray-500 font-medium">Calculating stats...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+      <!-- Stats Overview Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transform hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{{ stats.totalBoards }} Boards</span>
+          </div>
+          <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Boards</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalBoards }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transform hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">{{ stats.totalCards }} Cards</span>
+          </div>
+          <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Cards</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalCards }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transform hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-green-50 text-green-600 rounded-xl">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">{{ stats.completionRate }}% Rate</span>
+          </div>
+          <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Completed</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.completedCards }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transform hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">{{ stats.overdueCards }} Overdue</span>
+          </div>
+          <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Overdue</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.overdueCards }}</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Board Performance Table -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-800">Board Performance</h3>
+            <span class="text-xs text-gray-500 font-medium">Sorted by completion rate</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th class="px-6 py-4">Board Name</th>
+                  <th class="px-6 py-4 text-center">Total</th>
+                  <th class="px-6 py-4 text-center">Done</th>
+                  <th class="px-6 py-4 text-center">Overdue</th>
+                  <th class="px-6 py-4">Completion</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let board of boardStats" class="hover:bg-gray-50 transition">
+                  <td class="px-6 py-4 font-medium text-gray-800">{{ board.name }}</td>
+                  <td class="px-6 py-4 text-center text-gray-600">{{ board.total }}</td>
+                  <td class="px-6 py-4 text-center text-green-600 font-semibold">{{ board.completed }}</td>
+                  <td class="px-6 py-4 text-center text-red-500">{{ board.overdue }}</td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-indigo-600 rounded-full" [style.width.%]="board.rate"></div>
+                      </div>
+                      <span class="text-sm font-bold text-gray-700">{{ board.rate }}%</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Productivity Chart Placeholder/Activity -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h3 class="font-bold text-gray-800 mb-6">Productivity Overview</h3>
+          
+          <div class="space-y-6">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-600">Overall Progress</span>
+                <span class="text-sm font-bold text-indigo-600">{{ stats.completionRate }}%</span>
+              </div>
+              <div class="h-4 bg-gray-100 rounded-full overflow-hidden p-1">
+                <div class="h-full bg-indigo-600 rounded-full" [style.width.%]="stats.completionRate"></div>
+              </div>
+            </div>
+
+            <div class="pt-6 border-t border-gray-100">
+              <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Quick Insights</h4>
+              <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                  <div class="mt-1 w-2 h-2 rounded-full bg-green-500"></div>
+                  <p class="text-sm text-gray-600">
+                    <span class="font-bold text-gray-800">{{ stats.completedCards }} cards</span> completed successfully across all boards.
+                  </p>
+                </li>
+                <li class="flex items-start gap-3">
+                  <div class="mt-1 w-2 h-2 rounded-full bg-red-500"></div>
+                  <p class="text-sm text-gray-600">
+                    Warning: <span class="font-bold text-gray-800">{{ stats.overdueCards }} cards</span> are currently past their due date.
+                  </p>
+                </li>
+                <li class="flex items-start gap-3">
+                  <div class="mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
+                  <p class="text-sm text-gray-600">
+                    You have <span class="font-bold text-gray-800">{{ stats.totalMembers }} active members</span> collaborating in this workspace.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            
+            <button class="w-full mt-4 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+              Download Full Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

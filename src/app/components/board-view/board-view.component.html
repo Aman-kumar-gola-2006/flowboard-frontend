@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-[var(--bg-color)] transition-colors duration-300">
+  <app-navbar [showSearch]="true" searchPlaceholder="Search cards..."></app-navbar>
+  
+  <!-- Board Header -->
+  <div class="bg-[var(--card-bg)] border-b border-[var(--border-color)] px-4 md:px-6 py-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button (click)="goBack()" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-xl font-bold text-[var(--text-primary)]">{{ board?.name || 'Loading...' }}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-6 py-4">
+    <app-board-analytics [boardId]="boardId" #analytics></app-board-analytics>
+  </div>
+  
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex gap-4 p-4 overflow-x-auto">
+    <div *ngFor="let i of [1,2,3]" class="w-72 flex-shrink-0 bg-gray-200/50 rounded-xl p-3">
+      <div class="skeleton h-6 w-24 rounded mb-3"></div>
+      <div class="skeleton h-20 w-full rounded-lg mb-2"></div>
+      <div class="skeleton h-20 w-full rounded-lg"></div>
+    </div>
+  </div>
+  
+   <!-- Kanban Board -->
+   <div *ngIf="!isLoading" class="p-4 overflow-x-auto h-[calc(100vh-130px)]">
+     <div class="flex gap-4 h-full">
+       
+       <div *ngFor="let list of lists" class="w-80 flex-shrink-0 bg-[var(--card-bg)]/50 backdrop-blur-sm rounded-xl flex flex-col max-h-full border border-[var(--border-color)]">
+          <!-- List Header -->
+          <div class="p-3 flex items-center justify-between rounded-t-xl"
+               [style.background]="list.color || '#dddddd'"
+               [class.text-white]="isDarkColor(list.color || '#dddddd')"
+               [class.text-gray-800]="!isDarkColor(list.color || '#dddddd')">
+              <div class="flex items-center gap-2">
+                  <span [style.background]="list.color || '#dddddd'" 
+                        class="w-3 h-3 rounded-full flex-shrink-0 border border-white/30"></span>
+                  <h3 class="font-semibold">{{ list.name }}</h3>
+              </div>
+              <div class="flex items-center gap-1">
+                  <span class="text-xs opacity-75 bg-white/20 px-2 py-0.5 rounded-full">{{ cards[list.id].length || 0 }}</span>
+                  <button (click)="deleteList(list)" class="p-1 text-gray-400 hover:text-red-500 rounded transition-colors" [class.text-white]="isDarkColor(list.color || '#dddddd')">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                  </button>
+              </div>
+          </div>
+         
+         <!-- Cards Container -->
+         <div
+           cdkDropList
+           [id]="'list-' + list.id"
+           [cdkDropListData]="cards[list.id] || []"
+           [cdkDropListConnectedTo]="connectedListIds"
+           (cdkDropListDropped)="drop($event, list.id)"
+           class="flex-1 overflow-y-auto px-2 pb-2 space-y-2"
+         >
+            <div
+              *ngFor="let card of cards[list.id]"
+              cdkDrag
+              [cdkDragData]="card"
+              (click)="openCardDetail(card)"
+              class="bg-[var(--card-bg)] rounded-lg shadow-sm border border-[var(--border-color)] p-3 cursor-pointer hover:shadow-md transition"
+            >
+              <p class="text-sm font-medium text-[var(--text-primary)] mb-2">{{ card.title }}</p>
+              <div class="flex items-center gap-1">
+                <span [class]="'text-xs px-1.5 py-0.5 rounded ' + getPriorityColor(card.priority)">
+                  {{ card.priority }}
+                </span>
+              </div>
+            </div>
+         </div>
+         
+         <!-- Add Card -->
+         <div class="p-2 border-t border-[var(--border-color)]">
+           <div *ngIf="activeAddCardListId !== list.id">
+             <button (click)="startAddCard(list.id)" class="w-full p-2 text-left text-gray-500 hover:bg-gray-200 rounded-lg text-sm">
+               + Add a card
+             </button>
+           </div>
+           <div *ngIf="activeAddCardListId === list.id">
+             <input
+               [(ngModel)]="newCardTitle"
+               placeholder="Enter card title..."
+               class="w-full p-2 border rounded-lg text-sm"
+               (keydown.enter)="createCard(list.id)"
+             />
+             <div class="flex gap-2 mt-2">
+               <button (click)="createCard(list.id)" class="px-3 py-1 bg-indigo-600 text-white text-sm rounded">Add</button>
+               <button (click)="cancelAddCard()" class="px-3 py-1 text-gray-600 text-sm rounded">Cancel</button>
+             </div>
+           </div>
+         </div>
+       </div>
+      
+      <!-- Add List -->
+      <div class="w-80 flex-shrink-0">
+        <div *ngIf="!showAddList">
+          <button (click)="startAddList()" class="w-full p-3 bg-[var(--card-bg)]/60 rounded-xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-secondary)] hover:border-indigo-400 transition">
+            + Add another list
+          </button>
+        </div>
+        <div *ngIf="showAddList" class="bg-white rounded-xl p-3 shadow-sm">
+          <input
+            [(ngModel)]="newListName"
+            placeholder="Enter list title..."
+            class="w-full p-2 border border-gray-300 rounded-lg text-sm mb-2 focus:outline-none focus:border-indigo-500"
+            (keydown.enter)="createList()"
+          />
+          <!-- Color Picker -->
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs text-gray-500">Color:</span>
+            <input type="color" [(ngModel)]="newListColor" class="w-8 h-8 rounded cursor-pointer border-0" />
+            <span class="text-xs text-gray-400">(optional)</span>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="createList()" [disabled]="isCreatingList" class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+              Add list
+            </button>
+            <button (click)="cancelAddList()" class="px-3 py-1.5 text-gray-600 text-sm rounded-lg hover:bg-gray-100">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Card Detail Modal -->
+  <app-card-detail
+    *ngIf="showCardModal && selectedCard"
+    [card]="selectedCard"
+    [boardId]="boardId"
+    (close)="closeCardModal()"
+    (updated)="handleCardUpdate($event)"
+    (deleted)="handleCardDelete($event)"
+  ></app-card-detail>
+</div>
