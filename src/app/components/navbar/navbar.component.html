@@ -3,12 +3,12 @@
     <!-- Left: Logo & Brand -->
     <div class="flex items-center gap-6">
       <a routerLink="/dashboard" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+          <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
         </div>
-        <span class="text-xl font-black tracking-tight hidden sm:block transition-colors" style="color: var(--text-primary) !important;">FlowBoard</span>
+        <span class="text-lg md:text-xl font-black tracking-tight transition-colors" style="color: var(--text-primary) !important;">FlowBoard</span>
       </a>
       
       <div class="hidden lg:flex items-center gap-2 ml-4">
@@ -22,24 +22,30 @@
     </div>
     
     <!-- Center: Search -->
-    <div *ngIf="showSearch" class="flex-1 max-w-2xl mx-8 hidden md:block">
+    <div *ngIf="showSearch" class="flex-1 max-w-2xl mx-4 md:mx-8 hidden sm:block">
       <div class="relative group">
         <input
           type="text"
           [(ngModel)]="searchQuery"
           (ngModelChange)="onSearch()"
-          (keyup.enter)="onSearch()"
+          class="w-full pl-10 pr-4 py-2 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-indigo)] transition-all"
           [placeholder]="searchPlaceholder"
-          class="w-full pl-11 pr-4 py-2.5 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-[var(--accent-indigo)] focus:ring-4 focus:ring-[var(--accent-indigo)]/10 transition-all duration-300"
         />
-        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-[var(--accent-indigo)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
       </div>
     </div>
     
     <!-- Right: Actions -->
-    <div class="flex items-center gap-3 md:gap-5">
+    <div class="flex items-center gap-2 md:gap-5">
+      <!-- Mobile Menu Button -->
+      <button (click)="showMobileMenu = !showMobileMenu" class="lg:hidden p-2 text-[var(--text-secondary)] hover:bg-[var(--btn-hover)] rounded-xl">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path *ngIf="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+          <path *ngIf="showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
       <!-- Sliding Theme Toggle -->
       <div (click)="toggleTheme()" class="theme-switch flex items-center px-1">
         <div class="theme-switch-handle shadow-sm text-xs">
@@ -149,9 +155,66 @@
   </div>
 </nav>
 
+<!-- Mobile Menu Drawer -->
+<div *ngIf="showMobileMenu" class="lg:hidden fixed inset-0 top-[61px] bg-[var(--bg-color)] z-40 animate-slide-in-right overflow-y-auto">
+  <div class="p-6 space-y-6">
+    <!-- Mobile Search (only visible on very small screens where it's hidden from navbar) -->
+    <div *ngIf="showSearch" class="sm:hidden relative group">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        class="w-full pl-11 pr-4 py-3 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-indigo)] transition-all"
+        [placeholder]="searchPlaceholder"
+      />
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+
+    <div class="space-y-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-50 mb-3 px-4">Navigation</p>
+      <a routerLink="/dashboard" (click)="showMobileMenu = false" class="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-[var(--btn-hover)] text-[var(--text-primary)] font-bold transition-all">
+        <div class="p-2 bg-indigo-500/10 text-indigo-500 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </div>
+        Dashboard
+      </a>
+      <a routerLink="/explore" (click)="showMobileMenu = false" class="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-[var(--btn-hover)] text-[var(--text-primary)] font-bold transition-all">
+        <div class="p-2 bg-purple-500/10 text-purple-500 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        Explore
+      </a>
+      <a *ngIf="authService.isAdmin()" routerLink="/admin" (click)="showMobileMenu = false" class="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-[var(--btn-hover)] text-indigo-500 font-bold transition-all">
+        <div class="p-2 bg-indigo-500/10 text-indigo-500 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        Admin Panel
+      </a>
+    </div>
+
+    <div class="pt-6 border-t border-[var(--border-color)]">
+      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-50 mb-3 px-4">Account</p>
+      <a routerLink="/profile" (click)="showMobileMenu = false" class="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-[var(--btn-hover)] text-[var(--text-primary)] font-bold transition-all">
+        <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-sm font-black">
+          {{ getInitials(userName) }}
+        </div>
+        My Profile
+      </a>
+      <button (click)="logout()" class="flex items-center gap-4 w-full px-4 py-4 rounded-2xl hover:bg-red-500/10 text-red-500 font-bold transition-all text-left">
+        <div class="p-2 bg-red-500/10 text-red-500 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </div>
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Overlay for dropdowns -->
 <div
-  *ngIf="showNotifications || showUserMenu"
-  class="fixed inset-0 z-20"
-  (click)="showNotifications = false; showUserMenu = false"
+  *ngIf="showNotifications || showUserMenu || showMobileMenu"
+  class="fixed inset-0 z-20 bg-black/20 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none"
+  (click)="showNotifications = false; showUserMenu = false; showMobileMenu = false"
 ></div>

@@ -132,14 +132,14 @@
     </div>
     
     <!-- Workspaces Grid -->
-    <div *ngIf="!isLoading && filteredWorkspaces.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32">
+    <div *ngIf="!isLoading && filteredWorkspaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pb-32">
       <div
         *ngFor="let workspace of filteredWorkspaces; let i = index"
         (click)="navigateToWorkspace(workspace.id)"
-        class="group bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--border-color)] hover:border-indigo-500/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col"
+        class="group bg-[var(--card-bg)] rounded-[2rem] sm:rounded-[2.5rem] border border-[var(--border-color)] hover:border-indigo-500/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col"
       >
-        <div [class]="'h-2.5 w-full bg-gradient-to-r ' + getRandomGradient(i)"></div>
-        <div class="p-10 flex-1 flex flex-col">
+        <div [class]="'h-2 w-full bg-gradient-to-r ' + getRandomGradient(i)"></div>
+        <div class="p-6 sm:p-10 flex-1 flex flex-col">
           <div class="flex items-start justify-between mb-6">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-2">
@@ -219,8 +219,8 @@
   </footer>
   
   <!-- Create Workspace Modal -->
-  <div *ngIf="showCreateModal" class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in" (click)="closeCreateModal()">
-    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-3xl shadow-2xl w-full max-w-md p-8 relative overflow-hidden" (click)="$event.stopPropagation()">
+  <div *ngIf="showCreateModal" class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-fade-in" (click)="closeCreateModal()">
+    <div class="bg-[var(--card-bg)] border-t sm:border border-[var(--border-color)] rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 relative overflow-hidden" (click)="$event.stopPropagation()">
       <div class="absolute top-0 left-0 w-full h-1.5 gradient-primary"></div>
       
       <div class="flex items-center justify-between mb-8">

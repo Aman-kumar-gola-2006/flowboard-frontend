@@ -11,19 +11,19 @@ import { ToastService } from '../../services/toast.service';
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent],
   template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-[var(--bg-color)] transition-colors duration-300">
       <app-navbar></app-navbar>
       
-      <div class="max-w-7xl mx-auto p-6">
-        <div class="flex items-center justify-between mb-8">
+      <div class="max-w-7xl mx-auto p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">🛡️ Admin Control Center</h1>
-            <p class="text-gray-500 mt-1">Manage platform-wide users, workspaces, and system performance.</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">🛡️ Admin Control Center</h1>
+            <p class="text-[var(--text-secondary)] mt-1 text-sm font-medium">Manage platform-wide users, workspaces, and system performance.</p>
           </div>
           <div class="flex items-center gap-3">
-            <button (click)="loadStats()" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+            <button (click)="loadStats()" class="p-2.5 text-[var(--text-secondary)] hover:text-indigo-500 hover:bg-indigo-500/10 rounded-xl transition-all shadow-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
             </button>
           </div>
@@ -89,57 +89,61 @@ import { ToastService } from '../../services/toast.service';
         </div>
 
         <!-- Export Buttons -->
-        <div class="flex gap-3 mb-6 px-4">
-            <button (click)="exportUsers()" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm">
-                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Export Users (CSV)
+        <div class="flex flex-col sm:flex-row gap-3 mb-8 px-2">
+            <button (click)="exportUsers()" class="flex-1 bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-primary)] px-5 py-3.5 rounded-2xl text-xs font-black hover:bg-[var(--btn-hover)] transition-all flex items-center justify-center gap-3 shadow-sm group">
+                <div class="p-2 bg-indigo-500/10 rounded-lg group-hover:bg-indigo-500/20 transition-colors">
+                  <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                EXPORT USERS (CSV)
             </button>
-            <button (click)="exportAuditLogs()" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm">
-                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Export Audit Logs (CSV)
+            <button (click)="exportAuditLogs()" class="flex-1 bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-primary)] px-5 py-3.5 rounded-2xl text-xs font-black hover:bg-[var(--btn-hover)] transition-all flex items-center justify-center gap-3 shadow-sm group">
+                <div class="p-2 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">
+                  <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                EXPORT AUDIT LOGS (CSV)
             </button>
         </div>
 
         <!-- Tabs & Content -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div class="border-b border-gray-100 bg-gray-50/50 flex p-1 m-2 rounded-xl gap-1">
+        <div class="bg-[var(--card-bg)] rounded-[2rem] shadow-xl border border-[var(--border-color)] overflow-hidden">
+          <div class="border-b border-[var(--border-color)] bg-[var(--bg-color)]/30 backdrop-blur-sm flex p-1.5 m-3 rounded-2xl gap-1 overflow-x-auto no-scrollbar">
             <button 
               (click)="activeTab = 'users'" 
-              [class]="'flex-1 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ' + (activeTab === 'users' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100')"
+              [class]="'whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ' + (activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--btn-hover)]')"
             >
-              User Management
+              Users
             </button>
             <button 
               (click)="activeTab = 'workspaces'" 
-              [class]="'flex-1 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ' + (activeTab === 'workspaces' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100')"
+              [class]="'whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ' + (activeTab === 'workspaces' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--btn-hover)]')"
             >
               Workspaces
             </button>
             <button 
               (click)="activeTab = 'boards'" 
-              [class]="'flex-1 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ' + (activeTab === 'boards' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100')"
+              [class]="'whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ' + (activeTab === 'boards' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--btn-hover)]')"
             >
-              System Logs
+              Systems
             </button>
             <button 
               (click)="activeTab = 'audit'" 
-              [class]="'flex-1 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ' + (activeTab === 'audit' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100')"
+              [class]="'whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ' + (activeTab === 'audit' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--btn-hover)]')"
             >
-              Audit Logs
+              Audit
             </button>
             <button 
               (click)="activeTab = 'sla'" 
-              [class]="'flex-1 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ' + (activeTab === 'sla' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100')"
+              [class]="'whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ' + (activeTab === 'sla' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--btn-hover)]')"
             >
-              ⏰ SLA Monitoring
+              SLA
             </button>
           </div>
           
-          <div class="p-8">
+          <div class="p-4 sm:p-8">
             <!-- Users Table -->
             <div *ngIf="activeTab === 'users'" class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -217,16 +221,18 @@ import { ToastService } from '../../services/toast.service';
             <!-- System Logs Table -->
             <div *ngIf="activeTab === 'boards'" class="space-y-6">
                 <!-- Service Health -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div *ngFor="let svc of services" class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-gray-500 uppercase">{{ svc.name }}</span>
-                            <div [class]="'w-2.5 h-2.5 rounded-full ' + (svc.status === 'UP' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-red-500')"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div *ngFor="let svc of services" class="bg-[var(--bg-color)]/50 rounded-2xl p-5 border border-[var(--border-color)] group hover:border-indigo-500/30 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{{ svc.name }}</span>
+                            <div [class]="'w-2.5 h-2.5 rounded-full ' + (svc.status === 'UP' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)] animate-pulse' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.4)]')"></div>
                         </div>
-                        <p class="text-sm font-bold" [class.text-green-600]="svc.status === 'UP'" [class.text-red-600]="svc.status === 'DOWN'">
-                            {{ svc.status }}
-                        </p>
-                        <p class="text-[10px] text-gray-400 mt-1">Port: {{ svc.port }}</p>
+                        <div class="flex items-baseline gap-2">
+                          <p class="text-xl font-black tracking-tight" [class.text-emerald-500]="svc.status === 'UP'" [class.text-red-500]="svc.status === 'DOWN'">
+                              {{ svc.status }}
+                          </p>
+                          <span class="text-[10px] font-bold text-[var(--text-secondary)] opacity-40">PORT {{ svc.port }}</span>
+                        </div>
                     </div>
                 </div>
 
