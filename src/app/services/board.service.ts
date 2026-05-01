@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
-  private baseUrl = 'http://16.176.51.5:8080/api/v1/boards';
+  private baseUrl = 'https://16.176.51.5/api/v1/boards';
 
   constructor(private http: HttpClient) { }
 
