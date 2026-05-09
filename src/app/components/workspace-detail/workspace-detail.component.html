@@ -191,8 +191,8 @@
   </div>
   
   <!-- Create Board Modal -->
-  <div *ngIf="showCreateBoardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" (click)="closeCreateBoardModal()">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+  <div *ngIf="showCreateBoardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50" (click)="closeCreateBoardModal()">
+    <div class="bg-[var(--card-bg)] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
       <h2 class="text-xl font-bold text-gray-800 mb-4">Create New Board</h2>
       
       <form (ngSubmit)="createBoard()">
@@ -245,8 +245,8 @@
   </div>
   
   <!-- Invite Member Modal -->
-  <div *ngIf="showInviteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" (click)="closeInviteModal()">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+  <div *ngIf="showInviteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50" (click)="closeInviteModal()">
+    <div class="bg-[var(--card-bg)] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
       <h2 class="text-xl font-bold text-gray-800 mb-4">Invite to Workspace</h2>
       
       <div *ngIf="inviteError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">

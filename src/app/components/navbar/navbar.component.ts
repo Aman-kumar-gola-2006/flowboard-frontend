@@ -28,6 +28,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   notifications: Notification[] = [];
   showNotifications = false;
   showUserMenu = false;
+  showMobileMenu = false;
 
   private destroy$ = new Subject<void>();
 
