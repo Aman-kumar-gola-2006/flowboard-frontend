@@ -1,0 +1,45 @@
+  navigateToNotification(notification: Notification): void {
+    this.markAsRead(notification);
+    this.showNotifications = false;
+
+    if (notification.deepLink) {
+      this.router.navigateByUrl(notification.deepLink);
+    } else if (notification.relatedType === 'WORKSPACE' && notification.relatedId) {
+      this.router.navigate(['/workspace', notification.relatedId]);
+    } else if (notification.relatedType === 'BOARD' && notification.relatedId) {
+      this.router.navigate(['/board', notification.relatedId]);
+    } else if (notification.relatedType === 'CARD' && notification.relatedId) {
+      // Fetch card to get its boardId, then navigate to that board with card query param
+      this.notificationService.getCardBoardId(notification.relatedId).subscribe({
+        next: (boardId: number) => {
+          this.router.navigate(['/board', boardId], { queryParams: { card: notification.relatedId } });
+        },
+        error: () => {
+          this.router.navigate(['/dashboard']);
+        }
+      });
+    }
+  }
+
+  acceptInvite(notification: any, event: Event): void {
+    event.stopPropagation();
+    this.workspaceService.acceptInvitation(notification.relatedId, this.authService.getUserId()!).subscribe({
+      next: () => {
+        this.toastService.success('Accepted', 'Welcome to the workspace!');
+        this.markAsRead(notification);
+        this.router.navigate(['/workspace', notification.relatedId]);
+      },
+      error: () => this.toastService.error('Error', 'Failed to accept invitation')
+    });
+  }
+
+  rejectInvite(notification: any, event: Event): void {
+    event.stopPropagation();
+    this.workspaceService.rejectInvitation(notification.relatedId, this.authService.getUserId()!).subscribe({
+      next: () => {
+        this.toastService.info('Rejected', 'Invitation declined');
+        this.deleteNotification(notification.id, event);
+      },
+      error: () => this.toastService.error('Error', 'Failed to reject invitation')
+    });
+  }
