@@ -19,7 +19,7 @@ export class PaymentService {
         return;
       }
 
-      this.http.post('/api/v1/payments/create-order', { workspaceId, userId, amount: 99 })
+      this.http.post('/api/payments/create-order', { workspaceId, userId, amount: 99 })
         .subscribe({
           next: (res: any) => {
             const options = {
@@ -30,7 +30,7 @@ export class PaymentService {
               description: "Upgrade to PRO Membership",
               order_id: res.orderId,
               handler: (response: any) => {
-                this.http.post('/api/v1/payments/verify', {
+                this.http.post('/api/payments/verify', {
                   razorpayOrderId: response.razorpay_order_id,
                   razorpayPaymentId: response.razorpay_payment_id,
                   razorpaySignature: response.razorpay_signature,

@@ -405,28 +405,28 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadStats(): void {
-    this.http.get<any>('/api/v1/auth/admin/stats').subscribe({
+    this.http.get<any>('/api/auth/admin/stats').subscribe({
       next: (data) => this.stats = data,
       error: (err) => console.error('Admin stats error:', err)
     });
   }
 
   loadUsers(): void {
-    this.http.get<any[]>('/api/v1/admin/users').subscribe({
+    this.http.get<any[]>('/api/admin/users').subscribe({
       next: (data) => this.users = data,
       error: (err) => console.error('Error loading users:', err)
     });
   }
 
   loadWorkspaces(): void {
-    this.http.get<any[]>('/api/v1/workspaces/admin/all').subscribe({
+    this.http.get<any[]>('/api/workspaces/admin/all').subscribe({
       next: (data) => this.workspaces = data,
       error: (err) => console.error('Error loading workspaces:', err)
     });
   }
 
   loadSystemLogs(): void {
-    this.http.get<any[]>('/api/v1/notifications/admin/all').subscribe({
+    this.http.get<any[]>('/api/notifications/admin/all').subscribe({
       next: (data) => this.logs = data.slice(0, 50).reverse(),
       error: (err) => console.error('Error loading system logs:', err)
     });
@@ -444,14 +444,14 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadAuditLogs(): void {
-    this.http.get<any[]>('/api/v1/admin/audit-logs').subscribe({
+    this.http.get<any[]>('/api/admin/audit-logs').subscribe({
       next: (data) => this.auditLogs = data,
       error: (err) => console.error('Error loading audit logs:', err)
     });
   }
 
   loadOverdueCards(): void {
-    this.http.get<any[]>('/api/v1/admin/overdue-cards').subscribe({
+    this.http.get<any[]>('/api/admin/overdue-cards').subscribe({
       next: (data) => {
         this.overdueCards = Array.isArray(data) ? data : [];
       },
@@ -466,7 +466,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   exportUsers(): void {
-    this.http.get('/api/v1/admin/export/users/csv', { responseType: 'blob' }).subscribe({
+    this.http.get('/api/admin/export/users/csv', { responseType: 'blob' }).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -480,7 +480,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   exportAuditLogs(): void {
-    this.http.get('/api/v1/admin/export/audit-logs/csv', { responseType: 'blob' }).subscribe({
+    this.http.get('/api/admin/export/audit-logs/csv', { responseType: 'blob' }).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -505,7 +505,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   suspendUser(id: number): void {
-    this.http.put(`/api/v1/admin/users/${id}/suspend`, {}).subscribe({
+    this.http.put(`/api/admin/users/${id}/suspend`, {}).subscribe({
       next: () => {
         this.loadUsers();
         this.toastService.warning('User Suspended', 'The user account has been deactivated.');
@@ -515,7 +515,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   reactivateUser(id: number): void {
-    this.http.put(`/api/v1/admin/users/${id}/reactivate`, {}).subscribe({
+    this.http.put(`/api/admin/users/${id}/reactivate`, {}).subscribe({
       next: () => {
         this.loadUsers();
         this.toastService.success('User Activated', 'The user account is now active.');
@@ -532,7 +532,7 @@ export class AdminDashboardComponent implements OnInit {
       type: 'danger'
     }).then(confirmed => {
       if (confirmed) {
-        this.http.delete(`/api/v1/admin/users/${id}`).subscribe({
+        this.http.delete(`/api/admin/users/${id}`).subscribe({
           next: () => {
             this.loadUsers();
             this.loadStats();

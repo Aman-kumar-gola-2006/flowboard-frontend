@@ -54,9 +54,9 @@ export class WorkspaceAnalyticsComponent implements OnInit, OnDestroy {
     
     // Fetch workspace, boards and members in parallel
     forkJoin({
-      workspace: this.http.get<Workspace>(`/api/v1/workspaces/${this.workspaceId}`),
-      boards: this.http.get<Board[]>(`/api/v1/boards/workspace/${this.workspaceId}`),
-      members: this.http.get<any[]>(`/api/v1/workspaces/${this.workspaceId}/members`)
+      workspace: this.http.get<Workspace>(`/api/workspaces/${this.workspaceId}`),
+      boards: this.http.get<Board[]>(`/api/boards/workspace/${this.workspaceId}`),
+      members: this.http.get<any[]>(`/api/workspaces/${this.workspaceId}/members`)
     }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.workspace = data.workspace;
@@ -79,7 +79,7 @@ export class WorkspaceAnalyticsComponent implements OnInit, OnDestroy {
 
   loadAggregateCardStats(): void {
     const cardRequests = this.boards.map(board => 
-      this.http.get<any[]>(`/api/v1/cards/board/${board.id}`)
+      this.http.get<any[]>(`/api/cards/board/${board.id}`)
     );
 
     forkJoin(cardRequests).pipe(takeUntil(this.destroy$)).subscribe({

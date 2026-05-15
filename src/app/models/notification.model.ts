@@ -7,7 +7,7 @@ export interface Notification {
   title: string;
   message: string;
   relatedId?: number;
-  relatedType?: 'CARD' | 'BOARD' | 'COMMENT';
+  relatedType?: 'CARD' | 'BOARD' | 'COMMENT' | 'WORKSPACE';
   deepLink?: string;
   isRead: boolean;
   createdAt: string;
@@ -21,4 +21,5 @@ export interface NotificationEvent {
   message: string;
   relatedId?: number;
   relatedType?: string;
+  deepLink?: string;
 }

@@ -231,13 +231,28 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Assignee -->
         <div>
-          <label class="block text-xs font-medium text-gray-500 mb-1">Assignee</label>
+          <label class="block text-xs font-medium text-gray-500 mb-1">
+            Assignee 
+            <span *ngIf="!isWorkspaceAdmin" class="text-[10px] text-amber-500 ml-1">(Admin only)</span>
+          </label>
           <div class="relative">
-            <button (click)="showAssigneeDropdown = !showAssigneeDropdown" class="w-full p-2 bg-gray-50 rounded-lg text-sm text-left hover:bg-gray-100 transition flex items-center gap-2">
-              <span *ngIf="card.assigneeId" class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-xs font-medium">
-                {{ card.assigneeName?.charAt(0) || '?' }}
-              </span>
-              <span>{{ card.assigneeName || 'Unassigned' }}</span>
+            <button 
+              [disabled]="!isWorkspaceAdmin" 
+              (click)="showAssigneeDropdown = !showAssigneeDropdown" 
+              class="w-full p-2 bg-gray-50 rounded-lg text-sm text-left transition flex items-center justify-between"
+              [class.hover:bg-gray-100]="isWorkspaceAdmin"
+              [class.cursor-not-allowed]="!isWorkspaceAdmin"
+              [class.opacity-80]="!isWorkspaceAdmin"
+            >
+              <div class="flex items-center gap-2">
+                <span *ngIf="card.assigneeId" class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-xs font-medium">
+                  {{ card.assigneeName?.charAt(0) || '?' }}
+                </span>
+                <span>{{ card.assigneeName || 'Unassigned' }}</span>
+              </div>
+              <svg *ngIf="!isWorkspaceAdmin" class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
             </button>
             <div *ngIf="showAssigneeDropdown" class="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
               <div (click)="unassign()" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-500">Unassigned</div>
@@ -306,7 +321,7 @@
           <!-- Add Comment -->
           <div class="flex gap-3 mb-4">
               <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-sm font-medium flex-shrink-0">
-                  {{ getInitials(currentUserId.toString()) }}
+                  {{ getInitials(currentUserName || 'User') }}
               </div>
               <div class="flex-1">
                   <textarea

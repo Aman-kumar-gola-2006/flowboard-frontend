@@ -117,11 +117,11 @@ export class LoginComponent implements OnInit {
   }
 
   loginWithGoogle(): void {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = 'http://3.110.61.209:8080/oauth2/authorization/google';
   }
 
   loginWithGitHub(): void {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/github';
+    window.location.href = 'http://3.110.61.209:8080/oauth2/authorization/github';
   }
 
   openContactForm(event?: Event): void {

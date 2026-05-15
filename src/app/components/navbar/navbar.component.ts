@@ -9,6 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { ThemeService } from '../../services/theme.service';
 import { SearchService } from '../../services/search.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-navbar',
@@ -37,6 +38,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     public themeService: ThemeService,
     private searchService: SearchService,
+    private toastService: ToastService,
     private router: Router
   ) { }
 
@@ -94,7 +96,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   handleNewNotification(event: any): void {
-    // Play sound or show toast
+    // Show toast for new notification
+    this.toastService.info(
+      event.title || 'New Notification',
+      event.message || 'You have a new update.'
+    );
+
     this.unreadCount++;
 
     // Add to top of notifications list
@@ -112,7 +119,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       isRead: false,
       createdAt: new Date().toISOString()
     });
-
+    
     // Keep only last 10
     this.notifications = this.notifications.slice(0, 10);
   }
@@ -162,15 +169,42 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
   }
 
+  deleteNotification(event: Event, id: number): void {
+    event.stopPropagation();
+    this.notificationService.deleteNotification(id).subscribe({
+      next: () => {
+        this.notifications = this.notifications.filter(n => n.id !== id);
+        this.updateUnreadCount();
+      }
+    });
+  }
+
+  deleteAllNotifications(): void {
+    const userId = this.authService.getUserId();
+    this.notificationService.deleteAllNotifications(userId).subscribe({
+      next: () => {
+        this.notifications = [];
+        this.unreadCount = 0;
+      }
+    });
+  }
+
   navigateToNotification(notification: Notification): void {
+    console.log('Navigating to notification:', notification);
     this.markAsRead(notification);
     this.showNotifications = false;
 
     if (notification.deepLink) {
+      console.log('Navigating via deepLink:', notification.deepLink);
       this.router.navigateByUrl(notification.deepLink);
-    } else if (notification.relatedType === 'CARD' && notification.relatedId) {
-      // Navigate to card detail
-      console.log('Navigate to card:', notification.relatedId);
+    } else if (notification.relatedType === 'BOARD' && notification.relatedId) {
+      console.log('Navigating via BOARD fallback:', notification.relatedId);
+      this.router.navigate(['/board', notification.relatedId]);
+    } else if (notification.relatedType === 'WORKSPACE' && notification.relatedId) {
+      console.log('Navigating via WORKSPACE fallback:', notification.relatedId);
+      this.router.navigate(['/workspace', notification.relatedId]);
+    } else {
+      console.warn('No redirection path found for notification:', notification);
     }
   }
 
@@ -185,6 +219,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   getNotificationIcon(type: string): string {
     const icons: Record<string, string> = {
+      'ASSIGN': '👤',
       'ASSIGNMENT': '👤',
       'MENTION': '💬',
       'DUE_DATE': '⏰',

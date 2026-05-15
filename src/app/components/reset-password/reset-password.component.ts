@@ -102,7 +102,7 @@ export class ResetPasswordComponent implements OnInit {
     
     this.isLoading = true;
     
-    this.http.post<{ message: string; success: boolean }>('/api/v1/auth/reset-password', {
+    this.http.post<{ message: string; success: boolean }>('/api/auth/reset-password', {
       token: this.token,
       newPassword: this.password
     }).subscribe({

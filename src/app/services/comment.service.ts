@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  private baseUrl = '/api/v1/comments';
+  private baseUrl = '/api/comments';
   
   constructor(private http: HttpClient) {}
   

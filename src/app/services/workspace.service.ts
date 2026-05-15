@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceService {
-  private baseUrl = '/api/v1/workspaces';
+  private baseUrl = '/api/workspaces';
   
   constructor(private http: HttpClient) {}
   

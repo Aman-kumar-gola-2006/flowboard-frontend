@@ -67,6 +67,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   
   // User
   currentUserId: number;
+  currentUserName: string;
   
   // Checklist
   checklistItems: any[] = [];
@@ -89,6 +90,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   ) {
 
     this.currentUserId = this.authService.getUserId();
+    this.currentUserName = this.authService.getUserName();
   }
   
   ngOnInit(): void {
@@ -314,14 +316,20 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   
   // ========== ASSIGNEE ==========
   
+  isWorkspaceAdmin = false;
+  
   loadBoardMembers(): void {
     this.isLoadingMembers = true;
-    this.boardService.getBoardMembers(this.boardId)
+    this.boardService.getWorkspaceMembersByBoard(this.boardId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (members) => {
           this.boardMembers = members;
           this.isLoadingMembers = false;
+          
+          // Check if current user is admin of the workspace
+          const currentUserMember = members.find(m => m.userId === this.currentUserId);
+          this.isWorkspaceAdmin = currentUserMember?.role === 'ADMIN';
         },
         error: (err) => {
           console.error('Load members error:', err);
@@ -420,14 +428,14 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   // ========== CHECKLIST ==========
   
   loadChecklist(): void {
-    this.http.get<any[]>(`/api/v1/cards/${this.card.id}/checklist`).subscribe({
+    this.http.get<any[]>(`/api/cards/${this.card.id}/checklist`).subscribe({
       next: (items) => this.checklistItems = items
     });
   }
 
   addChecklistItem(): void {
     if (!this.newChecklistItem.trim()) return;
-    this.http.post(`/api/v1/cards/${this.card.id}/checklist`, { text: this.newChecklistItem }).subscribe({
+    this.http.post(`/api/cards/${this.card.id}/checklist`, { text: this.newChecklistItem }).subscribe({
       next: (item) => {
         this.checklistItems.push(item);
         this.newChecklistItem = '';
@@ -436,7 +444,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   }
 
   toggleChecklistItem(item: any): void {
-    this.http.put(`/api/v1/cards/${this.card.id}/checklist/${item.id}`, {}).subscribe({
+    this.http.put(`/api/cards/${this.card.id}/checklist/${item.id}`, {}).subscribe({
       next: (updated: any) => {
         item.isCompleted = updated.isCompleted;
       }
@@ -444,7 +452,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   }
 
   deleteChecklistItem(itemId: number): void {
-    this.http.delete(`/api/v1/cards/${this.card.id}/checklist/${itemId}`).subscribe({
+    this.http.delete(`/api/cards/${this.card.id}/checklist/${itemId}`).subscribe({
       next: () => this.checklistItems = this.checklistItems.filter(i => i.id !== itemId)
     });
   }
@@ -473,14 +481,14 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   }
 
   loadActivity(): void {
-    this.http.get<any[]>(`/api/v1/cards/${this.card.id}/activity`).subscribe({
+    this.http.get<any[]>(`/api/cards/${this.card.id}/activity`).subscribe({
       next: (data) => this.activities = data,
       error: () => this.activities = []
     });
   }
 
   loadAttachments(): void {
-    this.http.get<any[]>(`/api/v1/cards/${this.card.id}/attachments`).subscribe({
+    this.http.get<any[]>(`/api/cards/${this.card.id}/attachments`).subscribe({
       next: (data) => this.attachments = data,
       error: () => this.attachments = []
     });
@@ -491,7 +499,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      this.http.post(`/api/v1/cards/${this.card.id}/attachments`, formData).subscribe({
+      this.http.post(`/api/cards/${this.card.id}/attachments`, formData).subscribe({
         next: () => {
             this.loadAttachments();
             this.toastService.success('File Uploaded', 'Attachment added successfully.');
@@ -502,7 +510,7 @@ export class CardDetailComponent implements OnInit, OnDestroy {
   }
 
   deleteAttachment(id: number): void {
-    this.http.delete(`/api/v1/cards/${this.card.id}/attachments/${id}`).subscribe({
+    this.http.delete(`/api/cards/${this.card.id}/attachments/${id}`).subscribe({
       next: () => this.loadAttachments()
     });
   }

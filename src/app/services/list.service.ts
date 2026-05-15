@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class ListService {
-  private baseUrl = '/api/v1/lists';
+  private baseUrl = '/api/lists';
   
   constructor(private http: HttpClient) {}
   

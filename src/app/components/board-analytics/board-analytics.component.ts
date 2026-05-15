@@ -51,7 +51,7 @@ export class BoardAnalyticsComponent implements OnInit {
 
   loadData(): void {
     // Fetch Cards to calculate stats
-    this.http.get<any[]>(`/api/v1/cards/board/${this.boardId}`).subscribe({
+    this.http.get<any[]>(`/api/cards/board/${this.boardId}`).subscribe({
       next: (cards) => {
         this.totalCards = cards.length;
         this.overdueCards = cards.filter((c: any) => 
@@ -64,7 +64,7 @@ export class BoardAnalyticsComponent implements OnInit {
     });
 
     // Fetch Members count
-    this.http.get<any[]>(`/api/v1/boards/${this.boardId}/members`).subscribe({
+    this.http.get<any[]>(`/api/boards/${this.boardId}/members`).subscribe({
       next: (members) => this.memberCount = members.length,
       error: (err) => console.error('Error fetching members for analytics', err)
     });

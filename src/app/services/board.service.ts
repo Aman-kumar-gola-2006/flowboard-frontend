@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
-  private baseUrl = '/api/v1/boards';
+  private baseUrl = '/api/boards';
 
   constructor(private http: HttpClient) { }
 
@@ -32,5 +32,9 @@ export class BoardService {
 
   getBoardMembers(boardId: number): Observable<BoardMember[]> {
     return this.http.get<BoardMember[]>(`${this.baseUrl}/${boardId}/members`);
+  }
+
+  getWorkspaceMembersByBoard(boardId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/${boardId}/workspace-members`);
   }
 }

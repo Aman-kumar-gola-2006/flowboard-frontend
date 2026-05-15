@@ -8,7 +8,7 @@ import SockJS from 'sockjs-client';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private baseUrl = '/api/v1/notifications';
+  private baseUrl = '/api/notifications';
   private stompClient: Client | null = null;
   private notificationSubject = new Subject<NotificationEvent>();
   notification$ = this.notificationSubject.asObservable();
@@ -17,7 +17,7 @@ export class NotificationService {
   
   connectWebSocket(userId: number): void {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8088/ws'),
+      webSocketFactory: () => new SockJS('http://3.110.61.209:8088/ws'),
       onConnect: () => {
         console.log('STOMP connected');
         
@@ -63,5 +63,13 @@ export class NotificationService {
   
   markAllAsRead(userId: number): Observable<MessageResponse> {
     return this.http.put<MessageResponse>(`${this.baseUrl}/user/${userId}/read-all`, {});
+  }
+
+  deleteNotification(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  deleteAllNotifications(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/user/${userId}/all`);
   }
 }

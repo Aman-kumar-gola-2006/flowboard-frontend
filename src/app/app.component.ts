@@ -13,4 +13,4 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.
     <router-outlet></router-outlet>
   `
 })
-export class AppComponent {}
+export class AppComponent { }

@@ -84,7 +84,7 @@ export class PublicBoardsComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('/api/v1/boards/public').subscribe({
+    this.http.get<any[]>('/api/boards/public').subscribe({
       next: (data) => this.boards = data,
       error: (err) => {
         console.error('Error fetching public boards:', err);
