@@ -17,7 +17,7 @@ export class NotificationService {
   
   connectWebSocket(userId: number): void {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://3.110.61.209:8088/ws'),
+      webSocketFactory: () => new SockJS('http://3.110.61.209.nip.io:8088/ws'),
       onConnect: () => {
         console.log('STOMP connected');
         
