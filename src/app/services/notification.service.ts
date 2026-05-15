@@ -8,7 +8,7 @@ import SockJS from 'sockjs-client';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private baseUrl = '/api/notifications';
+  private baseUrl = 'http://3.110.61.209.nip.io:8080/api/notifications';
   private stompClient: Client | null = null;
   private notificationSubject = new Subject<NotificationEvent>();
   notification$ = this.notificationSubject.asObservable();
