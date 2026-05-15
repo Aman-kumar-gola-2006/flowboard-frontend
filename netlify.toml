@@ -1,24 +1,24 @@
 [[redirects]]
   from = "/api/*"
-  to = "http://3.110.61.209.nip.io/api/:splat"
+  to = "https://3.110.61.209.nip.io/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/ws/*"
-  to = "http://3.110.61.209.nip.io/ws/:splat"
+  to = "https://3.110.61.209.nip.io/ws/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/oauth2/*"
-  to = "http://3.110.61.209.nip.io/oauth2/:splat"
+  to = "https://3.110.61.209.nip.io/oauth2/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/login/oauth2/*"
-  to = "http://3.110.61.209.nip.io/login/oauth2/:splat"
+  to = "https://3.110.61.209.nip.io/login/oauth2/:splat"
   status = 200
   force = true
 
