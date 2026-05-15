@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://3.110.61.209.nip.io:8080/api/auth';
+  private baseUrl = '/api/auth';
   private tokenKey = 'token';
   private userIdKey = 'userId';
   

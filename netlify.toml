@@ -1,6 +1,12 @@
 [[redirects]]
   from = "/api/*"
-  to = "http://3.110.61.209.nip.io:8080/api/:splat"
+  to = "http://3.110.61.209.nip.io/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/ws/*"
+  to = "http://3.110.61.209.nip.io/ws/:splat"
   status = 200
   force = true
 

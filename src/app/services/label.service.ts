@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class LabelService {
-  private baseUrl = 'http://3.110.61.209.nip.io:8080/api/labels';
+  private baseUrl = '/api/labels';
   
   constructor(private http: HttpClient) {}
   
