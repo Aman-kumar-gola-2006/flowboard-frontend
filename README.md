@@ -1,152 +1,119 @@
-# FlowBoard — Angular 16+ Kanban App
+# 🚀 FlowBoard Frontend — Enterprise Kanban Workspace
 
-A production-ready Trello-like task management frontend built with Angular 16+, Tailwind CSS, and Angular CDK drag-and-drop.
-
----
-
-## Tech Stack
-
-- **Angular 16+** — standalone components, signals, `inject()`, `takeUntilDestroyed`
-- **Tailwind CSS 3** — utility-first styling with glassmorphism & gradients
-- **Angular CDK** — `cdkDrag` / `cdkDropList` for Kanban drag-and-drop
-- **RxJS 7** — `BehaviorSubject`, `forkJoin`, `takeUntilDestroyed`
+A high-performance, aesthetically premium project management frontend built with **Angular 17+**. FlowBoard delivers a Trello-like experience with real-time collaboration, advanced task tracking, and a sleek, modern UI.
 
 ---
 
-## Project Structure
+## ✨ Premium Features
+
+### 🔔 Real-Time Ecosystem
+- **Instant Notifications**: Powered by **STOMP/WebSocket**. Get notified instantly when a task is assigned, a due date is updated, or an invite is received.
+- **Actionable Toasts**: Click on a notification popup to navigate directly to the relevant board or workspace.
+- **Push Architecture**: No manual refresh required for system alerts.
+
+### 🛡️ Secure Authentication
+- **Multi-Provider Login**: Support for standard Email/Username login and Social Logins (**Google** & **GitHub**).
+- **JWT Protection**: Secure session management with automatic token attachment via HTTP Interceptors.
+- **Account Safeguards**: Immediate feedback for blocked/suspended accounts.
+
+### 📊 Powerful Kanban Boards
+- **Drag-and-Drop**: Fluid card movement across lists using **Angular CDK**.
+- **Deep Card Details**: Priority management (LOW to URGENT), due date tracking, labeling, and task descriptions.
+- **Dynamic Workspaces**: Organize projects into workspaces with specific collaborator access.
+
+### 👑 Admin Control Center
+- **User Management**: Search, block/unblock, and upgrade users to PRO status.
+- **Global Stats**: Real-time monitoring of total users, workspaces, boards, and cards across the platform.
+- **Audit Logging**: Track system activity for security and monitoring.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Core**: Angular 17+ (Standalone Components, Signals API)
+- **Styling**: Modern Vanilla CSS + Tailwind Utility Classes (Dark/Light Mode ready)
+- **Real-time**: SockJS / Stomp.js for WebSocket communication
+- **State & Logic**: RxJS Observables, BehaviorSubjects, and Angular Router
+- **Drag-Drop**: Angular CDK Drag & Drop module
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+)
+- [Angular CLI](https://angular.io/cli) (`npm install -g @angular/cli`)
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repo-url>
+   cd flowboard-frontend
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure API Proxy**:
+   The frontend uses a proxy for local development. Ensure `proxy.conf.json` points to your Gateway Service (default `http://localhost:8080`).
+
+4. **Launch Application**:
+   ```bash
+   npm start
+   ```
+   Open [http://localhost:4200](http://localhost:4200) in your browser.
+
+---
+
+## 📂 Project Architecture
 
 ```
 src/app/
-├── models/
-│   ├── user.model.ts
-│   ├── workspace.model.ts
-│   ├── board.model.ts
-│   ├── list.model.ts
-│   └── card.model.ts
-├── services/
-│   ├── auth.service.ts
-│   ├── workspace.service.ts
-│   ├── board.service.ts
-│   ├── list.service.ts
-│   └── card.service.ts
-├── guards/
-│   └── auth.guard.ts
-├── interceptors/
-│   └── auth.interceptor.ts
-├── components/
-│   ├── navbar/
-│   ├── login/
-│   ├── register/
-│   ├── dashboard/
-│   ├── board-view/
-│   └── card-detail/
-├── app.component.ts
-├── app.config.ts
-└── app.routes.ts
+├── components/          # Reusable UI & Page components
+│   ├── navbar/          # Global navigation & Notification center
+│   ├── admin/           # Admin dashboard & User controls
+│   ├── board-view/      # Interactive Kanban board
+│   └── toast/           # Custom interactive alert system
+├── services/            # Business logic & API abstraction
+│   ├── auth.service.ts  # Identity & Session management
+│   ├── notification.ts  # WebSocket/Stomp logic
+│   └── board.service.ts # CRUD for project entities
+├── models/              # TypeScript interfaces & DTOs
+├── interceptors/        # Global HTTP processing (Auth headers)
+└── guards/              # Route protection (Auth & Admin guards)
 ```
 
 ---
 
-## Quick Start
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Start dev server (proxies /api → http://localhost:8080)
-npm start
-
-# 3. Open browser
-open http://localhost:4200
-```
+## 🎨 UI & UX Design
+FlowBoard is architected with **"Aesthetics First"** principle:
+- **Glassmorphism**: Elegant semi-transparent backgrounds with blur effects.
+- **Micro-animations**: Smooth transitions for drag-drop, modal opening, and button interactions.
+- **Dynamic Themes**: Seamless switching between Deep Dark and Crisp Light modes.
+- **Accessibility**: Semantic HTML and descriptive ARIA roles for better screen reader support.
 
 ---
 
-## API Endpoints Expected
+## 🔧 Customization
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/login` | Login — returns `{ token, user }` |
-| POST | `/api/auth/register` | Register — returns `{ token, user }` |
-| GET | `/api/workspaces/user/:userId` | Get user's workspaces |
-| POST | `/api/workspaces` | Create workspace |
-| GET | `/api/boards/workspace/:workspaceId` | Get boards in workspace |
-| POST | `/api/boards` | Create board |
-| GET | `/api/lists/board/:boardId` | Get lists on board |
-| POST | `/api/lists` | Create list |
-| GET | `/api/cards/list/:listId` | Get cards in list |
-| POST | `/api/cards` | Create card |
-| PUT | `/api/cards/:cardId` | Update card |
-| PUT | `/api/cards/:cardId/move` | Move card (drag-drop) |
-
-### Auth Response Shape
-
-```json
-{
-  "token": "eyJhbGc...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "username": "janesmith",
-    "fullName": "Jane Smith",
-    "role": "MEMBER"
-  }
+### Theming
+Primary colors and design tokens are defined in `src/index.css`. You can modify the CSS variables to match your brand:
+```css
+:root {
+  --accent-indigo: #6366f1;
+  --bg-color: #ffffff;
+  /* ... */
 }
 ```
 
----
-
-## Features
-
-### Authentication
-- Login with email or username + password
-- Registration with full name, email, username, password + strength indicator
-- JWT token stored in `localStorage`, auto-attached via HTTP interceptor
-- Route protection via `authGuard`
-
-### Dashboard
-- Lists all user workspaces with their boards in a grid
-- Create workspace modal
-- Create board modal with color picker
-- Loading skeletons + empty states
-
-### Board View
-- Horizontal scrolling Kanban with CDK drag-and-drop
-- Cards draggable between lists — calls `PUT /api/cards/:id/move` on drop
-- Add card inline (quick form per list)
-- Add new list inline
-
-### Card Detail
-- Click any card to open a modal
-- Inline title editing
-- Description textarea (auto-saves on blur)
-- Priority selector (LOW / MEDIUM / HIGH / URGENT)
-- Due date picker
-- Label toggle buttons
-- Comments section (UI ready — wire up POST endpoint when available)
+### Notification Icons
+Icons for different notification types can be customized in `navbar.component.ts` within the `getNotificationIcon()` method.
 
 ---
 
-## Auth Interceptor
-
-Every HTTP request automatically includes:
-```
-Authorization: Bearer <token>
-X-User-Id: <userId>
-```
-
----
-
-## Customization
-
-### Proxy target
-Edit `proxy.conf.json` to change the backend URL:
-```json
-{ "/api": { "target": "http://your-backend:8080" } }
-```
-
-### Color gradients (boards)
-Edit `GRADIENTS` array in `dashboard.component.ts`.
-
-### Tailwind custom colors
-Edit `tailwind.config.js` — `slate.750`, `slate.850`, `slate.950` are custom additions.
+## ⚖️ License
+Architected with ❤️ by **Aman Kumar Gola** (2026).
+Part of the FlowBoard Microservice Ecosystem.
