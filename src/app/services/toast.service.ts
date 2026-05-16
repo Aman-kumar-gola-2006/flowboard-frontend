@@ -7,6 +7,7 @@ export interface Toast {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
+  onClick?: () => void;
 }
 
 @Injectable({
@@ -20,9 +21,9 @@ export class ToastService {
 
   constructor() {}
 
-  show(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', duration: number = 5000): void {
+  show(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', duration: number = 5000, onClick?: () => void): void {
     const id = this.nextId++;
-    const toast: Toast = { id, title, message, type, duration };
+    const toast: Toast = { id, title, message, type, duration, onClick };
     this.toasts.push(toast);
     this.toastSubject.next([...this.toasts]);
 

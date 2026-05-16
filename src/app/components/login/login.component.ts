@@ -58,9 +58,9 @@ export class LoginComponent implements OnInit {
     const error = this.route.snapshot.queryParamMap.get('error');
     if (error === 'oauth2') {
       this.toastService.error('Login Failed', 'Google login failed. Please try again.');
-    } else if (error === 'suspended') {
-      this.errorMessage = 'Your account has been suspended by an admin. Please contact support.';
-      this.toastService.error('Account Locked', 'Your account is suspended.');
+    } else if (error === 'suspended' || error === 'blocked') {
+      this.errorMessage = 'Your account has been blocked by an admin. Please contact support.';
+      this.toastService.error('Account Blocked', 'Access denied.');
     }
 
     // Agar already logged in hai to dashboard pe bhejo

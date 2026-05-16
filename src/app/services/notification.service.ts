@@ -16,25 +16,34 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
   
   connectWebSocket(userId: number): void {
+    console.log('Attempting to connect to WebSocket for user:', userId);
     const client = new Client({
       webSocketFactory: () => new SockJS('/ws'),
       onConnect: () => {
-        console.log('STOMP connected');
+        console.log('STOMP connected successfully');
         
         // Subscribe to user-specific notifications
-        client.subscribe(`/user/${userId}/queue/notifications`, (message: Message) => {
+        const topic = `/topic/notifications/${userId}`;
+        console.log('Subscribing to topic:', topic);
+        
+        client.subscribe(topic, (message: Message) => {
+          console.log('Real-time notification received:', message.body);
           const notification = JSON.parse(message.body);
           this.notificationSubject.next(notification);
         });
         
         // Subscribe to broadcasts
         client.subscribe('/topic/broadcast', (message: Message) => {
+          console.log('Broadcast received:', message.body);
           const broadcast = JSON.parse(message.body);
           this.notificationSubject.next(broadcast);
         });
       },
       onStompError: (error) => {
         console.error('STOMP error:', error);
+      },
+      onWebSocketClose: () => {
+        console.warn('WebSocket connection closed');
       }
     });
     

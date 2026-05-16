@@ -3,7 +3,8 @@
        class="toast-item" 
        [ngClass]="toast.type"
        [@toastAnimation]
-       (click)="remove(toast.id)">
+       (click)="onToastClick(toast)"
+       [style.cursor]="toast.onClick ? 'pointer' : 'default'">
     
     <div class="toast-icon">
       <span class="material-icons">{{ getIcon(toast.type) }}</span>

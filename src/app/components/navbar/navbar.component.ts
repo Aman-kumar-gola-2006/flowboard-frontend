@@ -96,10 +96,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   handleNewNotification(event: any): void {
-    // Show toast for new notification
-    this.toastService.info(
+    // Show interactive toast for new notification
+    this.toastService.show(
       event.title || 'New Notification',
-      event.message || 'You have a new update.'
+      event.message || 'You have a new update.',
+      'info',
+      5000,
+      () => this.navigateToNotification(event)
     );
 
     this.unreadCount++;
@@ -189,22 +192,51 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
   }
 
-  navigateToNotification(notification: Notification): void {
-    console.log('Navigating to notification:', notification);
-    this.markAsRead(notification);
+  navigateToNotification(notification: any): void {
+    const type = notification.type || '';
+    const relatedType = (notification.relatedType || '').toUpperCase();
+    const relatedId = notification.relatedId;
+    const deepLink = notification.deepLink;
+
+    console.log('--- NAVIGATION ATTEMPT ---', { type, relatedType, relatedId, deepLink });
+    // alert('Click detected! Navigating for: ' + type + ' to ' + relatedType + ' ID: ' + relatedId);
+
+    // Mark as read
+    if (notification.id) {
+      this.notificationService.markAsRead(notification.id).subscribe({
+        error: (err) => console.error('Mark read failed', err)
+      });
+      const localNotif = this.notifications.find(n => n.id === notification.id);
+      if (localNotif) localNotif.isRead = true;
+      this.updateUnreadCount();
+    }
+
     this.showNotifications = false;
 
-    if (notification.deepLink) {
-      console.log('Navigating via deepLink:', notification.deepLink);
-      this.router.navigateByUrl(notification.deepLink);
-    } else if (notification.relatedType === 'BOARD' && notification.relatedId) {
-      console.log('Navigating via BOARD fallback:', notification.relatedId);
-      this.router.navigate(['/board', notification.relatedId]);
-    } else if (notification.relatedType === 'WORKSPACE' && notification.relatedId) {
-      console.log('Navigating via WORKSPACE fallback:', notification.relatedId);
-      this.router.navigate(['/workspace', notification.relatedId]);
+    let navPromise;
+    if (type === 'INVITE') {
+      navPromise = this.router.navigate(['/dashboard']);
+    } else if (deepLink) {
+      navPromise = this.router.navigateByUrl(deepLink);
+    } else if (relatedType === 'BOARD' && relatedId) {
+      navPromise = this.router.navigate(['/board', relatedId]);
+    } else if (relatedType === 'WORKSPACE' && relatedId) {
+      navPromise = this.router.navigate(['/workspace', relatedId]);
     } else {
-      console.warn('No redirection path found for notification:', notification);
+      navPromise = this.router.navigate(['/dashboard']);
+    }
+
+    if (navPromise) {
+      navPromise.then(success => {
+        console.log('Navigation success:', success);
+        if (!success) {
+          console.error('Navigation failed! Route might be invalid.');
+          // alert('Navigation failed! Please check console.');
+        }
+      }).catch(err => {
+        console.error('Navigation error:', err);
+        // alert('Navigation error: ' + err.message);
+      });
     }
   }
 
@@ -225,7 +257,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       'DUE_DATE': '⏰',
       'COMMENT': '📝',
       'MOVE': '🔄',
-      'BROADCAST': '📢'
+      'BROADCAST': '📢',
+      'INVITE': '✉️'
     };
     return icons[type] || '🔔';
   }

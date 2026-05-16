@@ -36,6 +36,13 @@ export class ToastComponent implements OnInit {
     this.toastService.remove(id);
   }
 
+  onToastClick(toast: Toast): void {
+    if (toast.onClick) {
+      toast.onClick();
+      this.remove(toast.id);
+    }
+  }
+
   getIcon(type: string): string {
     switch (type) {
       case 'success': return 'check_circle';

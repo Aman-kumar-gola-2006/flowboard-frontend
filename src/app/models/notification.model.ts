@@ -3,7 +3,7 @@ export interface Notification {
   recipientId: number;
   actorId?: number;
   actorName?: string;
-  type: 'ASSIGNMENT' | 'MENTION' | 'DUE_DATE' | 'COMMENT' | 'MOVE' | 'BROADCAST';
+  type: 'ASSIGNMENT' | 'MENTION' | 'DUE_DATE' | 'COMMENT' | 'MOVE' | 'BROADCAST' | 'INVITE' | 'WELCOME' | 'PRO' | 'SUSPEND' | 'REACTIVATE';
   title: string;
   message: string;
   relatedId?: number;
@@ -14,8 +14,10 @@ export interface Notification {
 }
 
 export interface NotificationEvent {
+  id?: number;
   recipientId: number;
   actorId?: number;
+  actorName?: string;
   type: string;
   title: string;
   message: string;

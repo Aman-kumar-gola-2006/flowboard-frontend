@@ -157,20 +157,20 @@
         <div class="grid grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Name</label>
-            <input type="text" [(ngModel)]="contactData.name" name="name" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" required>
+            <input type="text" [(ngModel)]="contactData.name" name="name" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" placeholder="e.g. John Doe" required>
           </div>
           <div class="space-y-2">
             <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Email</label>
-            <input type="email" [(ngModel)]="contactData.email" name="email" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" required>
+            <input type="email" [(ngModel)]="contactData.email" name="email" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" placeholder="e.g. john@example.com" required>
           </div>
         </div>
         <div class="space-y-2">
           <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Subject</label>
-          <input type="text" [(ngModel)]="contactData.subject" name="subject" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" required>
+          <input type="text" [(ngModel)]="contactData.subject" name="subject" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)]" placeholder="e.g. Help with password reset" required>
         </div>
         <div class="space-y-2">
           <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Message</label>
-          <textarea [(ngModel)]="contactData.message" name="message" rows="4" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)] resize-none" required></textarea>
+          <textarea [(ngModel)]="contactData.message" name="message" rows="4" class="w-full px-6 py-4 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-2xl text-[var(--text-primary)] font-bold focus:outline-none focus:border-[var(--accent-indigo)] resize-none" placeholder="e.g. I am unable to reset my password using the forgot password link. Please help!" required></textarea>
         </div>
         <button type="submit" [disabled]="isSubmittingContact" class="w-full py-5 bg-[var(--text-primary)] text-[var(--bg-color)] rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-[1.02] transition-all">
           {{ isSubmittingContact ? 'Sending...' : 'Submit Support Request' }}
