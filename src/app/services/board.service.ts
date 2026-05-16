@@ -37,4 +37,12 @@ export class BoardService {
   getWorkspaceMembersByBoard(boardId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/${boardId}/workspace-members`);
   }
+
+  addMember(boardId: number, data: { userId: number, role: string }): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.baseUrl}/${boardId}/members`, data);
+  }
+
+  removeMember(boardId: number, userId: number): Observable<MessageResponse> {
+    return this.http.delete<MessageResponse>(`${this.baseUrl}/${boardId}/members/${userId}`);
+  }
 }

@@ -57,6 +57,11 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   selectedCard: Card | null = null;
   showCardModal = false;
 
+  // Board Members Management
+  showMembersModal = false;
+  boardMembers: any[] = [];
+  workspaceMembers: any[] = [];
+
   private destroy$ = new Subject<void>();
 
   // Getter for connected drop lists
@@ -408,6 +413,75 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     const b = parseInt(color.substring(4, 6), 16);
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
     return brightness < 128;
+  }
+
+  // --- Members Management ---
+  openMembersModal(): void {
+    this.showMembersModal = true;
+    this.loadBoardMembers();
+    this.loadWorkspaceMembers();
+  }
+
+  closeMembersModal(): void {
+    this.showMembersModal = false;
+  }
+
+  loadBoardMembers(): void {
+    this.boardService.getBoardMembers(this.boardId).subscribe({
+      next: (members) => {
+        this.boardMembers = members;
+      },
+      error: (err) => {
+        console.error('Error loading board members:', err);
+        this.toastService.error('Error', 'Could not load board members');
+      }
+    });
+  }
+
+  loadWorkspaceMembers(): void {
+    this.boardService.getWorkspaceMembersByBoard(this.boardId).subscribe({
+      next: (members) => {
+        this.workspaceMembers = members;
+      },
+      error: (err) => {
+        console.error('Error loading workspace members:', err);
+      }
+    });
+  }
+
+  addBoardMember(userId: number): void {
+    this.boardService.addMember(this.boardId, { userId, role: 'MEMBER' }).subscribe({
+      next: () => {
+        this.toastService.success('Member Added', 'Access granted to the board');
+        this.loadBoardMembers();
+        if (this.board) {
+          this.board.memberCount = (this.board.memberCount || 0) + 1;
+        }
+      },
+      error: (err) => {
+        this.toastService.error('Error', err.error?.message || 'Could not add member');
+      }
+    });
+  }
+
+  removeBoardMember(userId: number): void {
+    this.boardService.removeMember(this.boardId, userId).subscribe({
+      next: () => {
+        this.toastService.success('Member Removed', 'Access revoked');
+        this.loadBoardMembers();
+        if (this.board) {
+          this.board.memberCount = Math.max(0, (this.board.memberCount || 1) - 1);
+        }
+      },
+      error: (err) => {
+        this.toastService.error('Error', err.error?.message || 'Could not remove member');
+      }
+    });
+  }
+
+  filterAvailableMembers(): any[] {
+    const boardUserIds = this.boardMembers.map(m => m.userId);
+    return this.workspaceMembers.filter(wm => !boardUserIds.includes(wm.userId));
   }
 
   goBack(): void {

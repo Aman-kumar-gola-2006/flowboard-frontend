@@ -11,8 +11,21 @@
           </svg>
         </button>
         <div>
-          <h1 class="text-xl font-bold text-[var(--text-primary)]">{{ board?.name || 'Loading...' }}</h1>
+          <h1 class="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+            {{ board?.name || 'Loading...' }}
+            <span *ngIf="board?.visibility === 'PRIVATE'" class="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold">PRIVATE</span>
+          </h1>
         </div>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <!-- Board Members Button -->
+        <button (click)="openMembersModal()" class="flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border-color)] rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-gray-50 transition shadow-sm">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          Members ({{ board?.memberCount || 0 }})
+        </button>
       </div>
     </div>
   </div>
@@ -145,4 +158,76 @@
     (updated)="handleCardUpdate($event)"
     (deleted)="handleCardDelete($event)"
   ></app-card-detail>
+
+  <!-- Board Members Management Modal -->
+  <div *ngIf="showMembersModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div class="bg-[var(--card-bg)] w-full max-w-2xl rounded-[2rem] border border-[var(--border-color)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="p-8 border-b border-[var(--border-color)] flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-black text-[var(--text-primary)]">Board Members</h2>
+          <p class="text-sm text-[var(--text-secondary)] font-medium mt-1">Manage who can access and collaborate on this board</p>
+        </div>
+        <button (click)="closeMembersModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-[var(--text-secondary)]">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-8">
+        <!-- Current Board Members -->
+        <div>
+          <h3 class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-4">Board Members ({{ boardMembers.length }})</h3>
+          <div class="space-y-3">
+            <div *ngFor="let member of boardMembers" class="flex items-center justify-between p-4 bg-gray-50 border border-[var(--border-color)] rounded-2xl hover:border-indigo-200 transition-all group">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-black text-lg">
+                  {{ member.userName?.charAt(0) || 'U' }}
+                </div>
+                <div>
+                  <p class="font-black text-[var(--text-primary)]">{{ member.userName }}</p>
+                  <p class="text-xs text-[var(--text-secondary)] font-medium">{{ member.userEmail }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span [class]="'text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-wider ' + (member.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600')">
+                  {{ member.role }}
+                </span>
+                <button *ngIf="member.role !== 'ADMIN'" (click)="removeBoardMember(member.userId)" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workspace Members to Invite -->
+        <div>
+          <h3 class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-4">Invite Workspace Members</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div *ngFor="let member of filterAvailableMembers()" class="flex items-center justify-between p-4 border border-[var(--border-color)] rounded-2xl hover:border-indigo-400 transition-all">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 bg-gray-100 text-gray-500 rounded-lg flex items-center justify-center font-black flex-shrink-0">
+                  {{ member.userName?.charAt(0) || 'U' }}
+                </div>
+                <div class="overflow-hidden">
+                  <p class="font-bold text-sm text-[var(--text-primary)] truncate">{{ member.userName }}</p>
+                </div>
+              </div>
+              <button (click)="addBoardMember(member.userId)" class="px-3 py-1.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-indigo-700 transition shadow-sm">
+                Add Access
+              </button>
+            </div>
+          </div>
+          <div *ngIf="filterAvailableMembers().length === 0" class="p-6 bg-gray-50 rounded-2xl text-center border border-dashed border-[var(--border-color)]">
+            <p class="text-xs text-[var(--text-secondary)] font-medium">All workspace members already have access to this board.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
