@@ -1,0 +1,142 @@
+<!-- Board Chat Slide-in Panel -->
+<div class="chat-panel">
+
+  <!-- Panel Header -->
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="chat-title">Board Chat</h3>
+        <div class="ws-status ws-connected">
+          <span class="ws-dot"></span>
+          Online
+        </div>
+      </div>
+    </div>
+    <button (click)="close()" class="chat-close-btn" title="Close chat">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Messages Area -->
+  <div class="chat-messages" #scrollContainer>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="chat-loading">
+      <div class="loading-spinner"></div>
+      <span>Loading messages...</span>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="hasError" class="chat-error p-6 text-center flex flex-col items-center justify-center h-full my-auto">
+      <div class="chat-empty-icon text-red-500 text-2xl mb-2">⚠️</div>
+      <p class="chat-empty-title text-red-600 font-bold text-sm">Failed to load chat history</p>
+      <p class="chat-empty-subtitle text-gray-500 mb-4 text-xs">Verify your board membership permissions</p>
+      <button (click)="loadChatHistory()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+        Retry Loading
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && !hasError && messages.length === 0" class="chat-empty">
+      <div class="chat-empty-icon">💬</div>
+      <p class="chat-empty-title">No messages yet</p>
+      <p class="chat-empty-subtitle">Start the conversation!</p>
+    </div>
+
+    <!-- Messages list -->
+    <div *ngIf="!isLoading && !hasError && messages.length > 0" class="messages-list">
+      <div
+        *ngFor="let msg of messages; trackBy: trackByMsgId"
+        class="message-wrapper"
+        [class.message-own]="msg.senderId === currentUserId"
+        [class.message-other]="msg.senderId !== currentUserId"
+      >
+        <!-- Other user's message - avatar on left -->
+        <ng-container *ngIf="msg.senderId !== currentUserId">
+          <div class="avatar avatar-other">
+            <img *ngIf="msg.senderAvatar" [src]="msg.senderAvatar" [alt]="msg.senderName" class="avatar-img" />
+            <span *ngIf="!msg.senderAvatar">{{ getInitials(msg.senderName) }}</span>
+          </div>
+          <div class="bubble-container bubble-container-other">
+            <p class="sender-name">{{ msg.senderName }}</p>
+            <div class="bubble bubble-other">
+              <p class="bubble-content">{{ msg.content }}</p>
+            </div>
+            <p class="bubble-time">{{ formatTime(msg.createdAt) }}</p>
+          </div>
+        </ng-container>
+
+        <!-- Own message - bubble on right -->
+        <ng-container *ngIf="msg.senderId === currentUserId">
+          <div class="bubble-container bubble-container-own">
+            <div class="bubble bubble-own" [class.bubble-sending]="msg.status === 'sending'" [class.bubble-error]="msg.status === 'error'">
+              <p class="bubble-content">{{ msg.content }}</p>
+            </div>
+            <div class="bubble-meta-own flex items-center justify-end gap-1.5 mt-1">
+              <span class="bubble-time bubble-time-own">{{ formatTime(msg.createdAt) }}</span>
+              <span *ngIf="msg.status === 'sending'" class="status-indicator sending" title="Sending...">⏳</span>
+              <span *ngIf="msg.status === 'error'" class="status-indicator error" title="Failed to send">⚠️</span>
+              <span *ngIf="!msg.status || msg.status === 'sent'" class="status-indicator sent" title="Sent">✓</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="chat-input-area relative">
+    
+    <!-- Mentions Suggestion Autocomplete Dropdown -->
+    <div *ngIf="showMentionDropdown && filteredMembers.length > 0" class="mention-dropdown">
+      <div class="mention-dropdown-header">Board Members</div>
+      <div class="mention-dropdown-list">
+        <button 
+          *ngFor="let member of filteredMembers" 
+          (click)="selectMention(member)" 
+          class="mention-dropdown-item"
+        >
+          <div class="mention-avatar">
+            {{ member.userName?.charAt(0) || 'U' }}
+          </div>
+          <div class="mention-details">
+            <span class="mention-name">{{ member.userName }}</span>
+            <span class="mention-email">{{ member.userEmail }}</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-input-wrapper">
+      <input
+        [(ngModel)]="newMessage"
+        (input)="onInput($event)"
+        (keydown)="onKeyDown($event)"
+        placeholder="Type a message..."
+        class="chat-input"
+        [disabled]="isSending"
+        id="chat-message-input"
+        autocomplete="off"
+      />
+      <button
+        (click)="sendMessage()"
+        class="chat-send-btn"
+        [disabled]="!newMessage.trim() || isSending"
+        title="Send message"
+      >
+        <svg *ngIf="!isSending" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+        </svg>
+        <div *ngIf="isSending" class="send-spinner"></div>
+      </button>
+    </div>
+    <p class="input-hint">Press Enter to send</p>
+  </div>
+</div>

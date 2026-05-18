@@ -34,6 +34,12 @@ export class AuthInterceptor implements HttpInterceptor {
       }
     }
     
+    // Also pass user name so services like chat can display sender name properly
+    const userName = this.authService.getUserName();
+    if (userName) {
+      headers = headers.set('X-User-Name', userName);
+    }
+    
     const authReq = req.clone({ headers });
     
     return next.handle(authReq).pipe(

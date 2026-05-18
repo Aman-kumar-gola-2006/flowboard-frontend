@@ -19,6 +19,22 @@
       </div>
       
       <div class="flex items-center gap-4">
+        <!-- Chat Toggle Button -->
+        <button
+          *ngIf="isBoardMember()"
+          (click)="toggleChat()"
+          [class]="showChat ? 'relative flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-sm' : 'relative flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border-color)] rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-gray-50 transition shadow-sm'"
+          id="chat-toggle-btn"
+        >
+          <!-- Green Dot Unread Indicator -->
+          <span *ngIf="hasUnreadMessages" class="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white animate-pulse"></span>
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+          </svg>
+          Chat
+        </button>
+
         <!-- Board Members Button -->
         <button (click)="openMembersModal()" class="flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border-color)] rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-gray-50 transition shadow-sm">
           <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,3 +247,10 @@
     </div>
   </div>
 </div>
+
+<!-- Board Chat Panel (slides in from right) -->
+<app-board-chat
+  *ngIf="showChat && isBoardMember()"
+  [boardId]="boardId"
+  (closePanel)="showChat = false"
+></app-board-chat>

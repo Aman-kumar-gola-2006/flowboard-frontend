@@ -96,6 +96,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   handleNewNotification(event: any): void {
+    // If user is already on that board with chat open → Don't show toast
+    if (event.type === 'CHAT_MESSAGE' && 
+        (window as any).isBoardChatOpen && 
+        Number((window as any).activeChatBoardId) === Number(event.relatedId)) {
+      console.log('Skipping chat notification toast because user has this chat open');
+      return;
+    }
+
     // Show interactive toast for new notification
     this.toastService.show(
       event.title || 'New Notification',

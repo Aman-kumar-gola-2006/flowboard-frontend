@@ -18,16 +18,19 @@ import { Board } from '../../models/board.model';
 import { TaskList } from '../../models/list.model';
 import { Card, CardRequest } from '../../models/card.model';
 import { Subject, takeUntil } from 'rxjs';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { ConfirmService } from '../../services/confirm.service';
 import { ToastService } from '../../services/toast.service';
 
 import { BoardAnalyticsComponent } from '../board-analytics/board-analytics.component';
+import { BoardChatComponent } from '../board-chat/board-chat.component';
 import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-board-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DragDropModule, NavbarComponent, CardDetailComponent, BoardAnalyticsComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DragDropModule, NavbarComponent, CardDetailComponent, BoardAnalyticsComponent, BoardChatComponent],
   templateUrl: './board-view.component.html',
   styleUrls: ['./board-view.component.css']
 })
@@ -64,6 +67,12 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
+  hasUnreadMessages = false;
+  chatStompClient: Client | null = null;
+
+  // Board chat panel toggle
+  showChat = false;
+
   // Getter for connected drop lists
   get connectedListIds(): string[] {
     return this.lists.map(list => 'list-' + list.id);
@@ -80,13 +89,43 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private toastService: ToastService
   ) {}
 
+  isBoardMember(): boolean {
+    const currentUserId = this.authService.getUserId();
+    return this.boardMembers.some(m => m.userId === currentUserId);
+  }
+
+  connectChatWebSocket(): void {
+    this.chatStompClient = new Client({
+      webSocketFactory: () => new SockJS('/ws-board'),
+      reconnectDelay: 5000,
+      onConnect: () => {
+        console.log('Board view chat WS connected');
+        this.chatStompClient!.subscribe(`/topic/board/${this.boardId}/chat`, (frame) => {
+          const msg = JSON.parse(frame.body);
+          const currentUserId = this.authService.getUserId();
+          if (msg.senderId !== currentUserId && !this.showChat) {
+            this.hasUnreadMessages = true;
+          }
+        });
+      }
+    });
+    this.chatStompClient.activate();
+  }
+
   ngOnInit(): void {
     this.boardId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadBoard();
     this.loadLists();
+    this.loadBoardMembers();
+    this.connectChatWebSocket();
   }
 
   ngOnDestroy(): void {
+    (window as any).isBoardChatOpen = false;
+    (window as any).activeChatBoardId = null;
+    if (this.chatStompClient) {
+      this.chatStompClient.deactivate();
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -486,5 +525,17 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     this.router.navigate(['/workspace', this.board?.workspaceId]);
+  }
+
+  toggleChat(): void {
+    if (!this.showChat) {
+      this.hasUnreadMessages = false;
+      (window as any).isBoardChatOpen = true;
+      (window as any).activeChatBoardId = this.boardId;
+    } else {
+      (window as any).isBoardChatOpen = false;
+      (window as any).activeChatBoardId = null;
+    }
+    this.showChat = !this.showChat;
   }
 }
