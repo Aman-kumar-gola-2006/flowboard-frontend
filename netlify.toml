@@ -11,8 +11,8 @@
   force = true
 
 [[redirects]]
-  from = "/oauth2/*"
-  to = "http://localhost:8080/oauth2/:splat"
+  from = "/oauth2/authorization/*"
+  to = "http://localhost:8080/oauth2/authorization/:splat"
   status = 200
   force = true
 
